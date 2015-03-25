@@ -37,6 +37,7 @@ class MarketProxy():
     """
     def __init__(self):
         self.__cache = dict()
+        logging.info('cache: Initialized')
 
     def get_share(self, code):
         """
