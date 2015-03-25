@@ -49,4 +49,4 @@ def get_ajax_client():
     return ClientInfo().get_full_info(t)
 
 
-bottle.run(app, host='172.23.74.56', port=8080, debug=True, reloader=True)
+bottle.run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)
