@@ -1,9 +1,12 @@
 __author__ = 'abodalevsky'
 
+import logging
 from time import time
 from market.config import Config
 from market.connector import get_shares
 from market.adapters import response_to_values
+
+# TODO: Implement optimization - old data removed from cache
 
 
 class MarketProxy():
@@ -16,9 +19,9 @@ class MarketProxy():
         - if no, share code be added to cache, all data will be updated, answer will be sent back
 
     Interface should be similar to Market class
-    """
 
-    """ contains data that is retrieved from online, in format
+
+    Contains data that is retrieved from online, in format
         id: [time, answer]
             where answer is in format:
             {
@@ -37,7 +40,6 @@ class MarketProxy():
 
     def get_share(self, code):
         """
-
         :param code: code {string} of share from class Shares
         :return: value for given share in format
             {
@@ -45,7 +47,7 @@ class MarketProxy():
                 'summary':'sell'
             }
         """
-
+        logging.debug('Request for share {0}'.format(code))
         answer = self.__get_from_cache(code)
 
         if answer == {}:
@@ -61,6 +63,7 @@ class MarketProxy():
         :return: answer
         """
         try:
+            logging.debug('cache: request')
             answer = self.__cache[code]
 
             # verify that data is up to dated
@@ -70,9 +73,11 @@ class MarketProxy():
                 self.__update_cache()
                 answer = self.__cache[code]
 
+            logging.debug('cache: data returned')
             return answer[1]
 
         except KeyError:  # no code in the cache
+            logging.debug('cache: data not found')
             return {}
 
     def __add_share_to_cache(self, code):
@@ -81,13 +86,15 @@ class MarketProxy():
         :return: none
         """
 
-        data = [round(time()), {'price': 0, 'summary':'neutral'}]
+        data = self.__format_data_for_cache('0', 'neutral')
         self.__cache[code] = data
 
     def __update_cache(self):
         """ updates all records in cache
         :return: none
         """
+
+        logging.info('cache: update')
 
         if len(self.__cache) == 0:
             return
@@ -97,6 +104,30 @@ class MarketProxy():
         for i in self.__cache:
             shares += i + ', '
 
+        # got response in json format
+        logging.debug('cache: request for shares[{0}]'.format(shares))
         shares = response_to_values(get_shares(shares.rstrip(', ')))
 
-        pass
+        # update cache
+        for share, value in shares.items():
+            logging.info('cache: update for {0}'.format(share))
+            data = self.__format_data_for_cache(value['summaryLast'], value['technicalSummaryClass'])
+            self.__cache[share.strip()] = data
+            logging.debug('cache: updates with {0}'.format(data))
+
+    def __format_data_for_cache(self, price, recommendation):
+        """
+        Time will be inserted automatically
+        price from string will be converted to float
+        :param price: string
+        :param recommendation: string
+        :return: list
+        """
+
+        try:
+            pr = round(float(price.replace(',', '.')), 3)
+        except ValueError as e:
+            logging.error('cache: wrong format: ' + repr(e))
+            pr = 0
+
+        return [round(time()), {'price': pr, 'summary': recommendation}]

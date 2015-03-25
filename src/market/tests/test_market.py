@@ -109,4 +109,3 @@ class TestMarket(unittest.TestCase):
         self.assertEqual(self.valid_USD_BRENT_dict, answer, 'Request data from market failed')
         get_shares_test_func.assert_called_with('2186, 8833')
 
-
