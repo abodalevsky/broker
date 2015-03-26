@@ -176,12 +176,16 @@ class DbCursor():
         'user': 'super',
         'database': 'brocker',
         'host': '0.0.0.0',
-        'password': '12345:)'
+        'password': ':)'
     }
 
     def __init__(self, read_only=True):
         self.__read_only = read_only
         self.__config['host'] = Config.STORAGE_HOST
+        self.__config['user'] = Config.STORAGE_USER
+        self.__config['password'] = Config.STORAGE_PASSWORD
+        self.__config['database'] = Config.STORAGE_DATABASE_NAME
+
 
     def __enter__(self):
         # TODO: check exceptions!!!
