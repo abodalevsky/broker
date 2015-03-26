@@ -1,6 +1,7 @@
 __author__ = 'abodalevsky'
 
 from mysql.connector import *
+from market.config import Config
 
 
 class Store():
@@ -174,12 +175,13 @@ class DbCursor():
     __config = {
         'user': 'super',
         'database': 'brocker',
-        'host': '172.23.74.54',
+        'host': '0.0.0.0',
         'password': '12345:)'
     }
 
     def __init__(self, read_only=True):
         self.__read_only = read_only
+        self.__config['host'] = Config.STORAGE_HOST
 
     def __enter__(self):
         # TODO: check exceptions!!!

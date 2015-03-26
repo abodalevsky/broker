@@ -2,10 +2,14 @@ __author__ = 'abodalevsky'
 
 import logging
 import sys
+from market.config import Config
 from time import sleep
 from trading.trader import Trader
 
-BANNER = """ Starts trading with interval 5 minutes"""
+BANNER = """ Starts trading with interval 5 minutes
+    options:
+        -storage_host:ip_address - ip address of MySQL server, port is default
+"""
 
 
 def run():
@@ -13,10 +17,13 @@ def run():
     logging.getLogger().setLevel(logging.DEBUG)
     logging.StreamHandler(sys.stdout)
 
+    print(BANNER)
     logging.info('start execution')
 
+    logging.info('Init...')
+    Config.init(*sys.argv)
+
     t = Trader()
-    print(BANNER)
 
     next_loop = True
     running_count = 1

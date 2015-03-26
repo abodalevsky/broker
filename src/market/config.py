@@ -1,4 +1,7 @@
 __author__ = 'abodalevsky'
+
+import sys
+import logging
 import time
 import urllib.parse
 
@@ -15,6 +18,36 @@ class Config():
 
     Data will be hardcoded, later on may be redesigned for INI file or database
     """
+
+    """
+    Static variables for storage
+    """
+    STORAGE_HOST = '0.0.0.0'
+    STORAGE_USER = 'super'
+    STORAGE_PASSWORD = '12345:)'
+    STORAGE_DATABASE_NAME = 'brocker'
+
+    __HOST_FLAG = '-storage_host:'
+
+    @staticmethod
+    def init(*args):
+        """
+        Analyse:
+            - ini file and initialize with given settings (not implemented yet)
+            - command line, overwrite settings, if any
+        :param args: list of arguments
+        :return: None
+        """
+        logging.info('Fetch data from command line')
+
+        for arg in args[1:]:
+            logging.debug('\t\tparse: {0}'.format(arg))
+            if arg.startswith(Config.__HOST_FLAG):
+                Config.STORAGE_HOST = arg.lstrip(Config.__HOST_FLAG)
+                logging.info('\t\tstorage host: {0}'.format(Config.STORAGE_HOST))
+            else:
+                logging.info('\t\t!!! unrecognized parameter!!!')
+
     @staticmethod
     def url():
         return 'ru.investing.com'
