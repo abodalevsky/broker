@@ -61,5 +61,15 @@ tsb_currentTimeframe=60'.format(pulse, t, tsb_quoted)
         }
 
     @staticmethod
-    def time_to_update():
+    def cache_time_to_update():
+        """
+        :return: interval (in seconds) between update cache
+        """
         return 3 * 60  # 3 minutes
+
+    @staticmethod
+    def cache_time_to_remove():
+        """
+        :return: interval (in seconds) while data in cache is stored
+        """
+        return 60 * 60  # 1 hour

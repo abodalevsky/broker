@@ -6,8 +6,6 @@ from market.config import Config
 from market.connector import get_shares
 from market.adapters import response_to_values
 
-# TODO: Implement optimization - old data removed from cache
-
 
 class MarketProxy():
     """ Implements proxy for optimization access to online sources
@@ -23,18 +21,25 @@ class MarketProxy():
 
     Contains data that is retrieved from online, in format
         id: [time, answer]
-            where answer is in format:
-            {
-                'price': float,
-                'summary':string
-            },
+            where:
+            time - is time of last request, before update cache from server this info is being analized
+                and old data will be removed from the cache
+            answer - is in format:
+                {
+                    'price': float,
+                    'summary':string
+                },
 
-        for example:
-        {
-            '25': [1234567, {'price': 55.640, 'summary':'sell'}],
-            '23': [1234568, {'price': 15.405, 'summary':'buy'}]
-        }
+                for example:
+                {
+                    '25': [1234567, {'price': 55.640, 'summary':'sell'}],
+                    '23': [1234568, {'price': 15.405, 'summary':'buy'}]
+                }
     """
+
+    # last time when cache was updated
+    __last_update = 0
+
     def __init__(self):
         self.__cache = dict()
         logging.info('cache: Initialized')
@@ -59,7 +64,9 @@ class MarketProxy():
         return answer
 
     def __get_from_cache(self, code):
-        """ gets data from cache, if data invalid updates cache
+        """
+        Gets data from cache, if data invalid updates cache
+        update time to access data, to be sure that data is requested
         :param code: code of share
         :return: answer
         """
@@ -67,10 +74,10 @@ class MarketProxy():
             logging.debug('cache: request')
             answer = self.__cache[code]
 
-            # verify that data is up to dated
-            last_update = answer[0]
+            # verify if data is up to dated
             current_time = round(time())
-            if current_time - last_update > Config.time_to_update():
+            if current_time - self.__last_update > Config.cache_time_to_update():
+                logging.info('cache: out of date')
                 self.__update_cache()
                 answer = self.__cache[code]
 
@@ -101,13 +108,21 @@ class MarketProxy():
             return
 
         # prepare list of shares for request
+        # check old data, if data is old remove from cache
         shares = str()
+        new_cache = dict()
         for i in self.__cache:
-            shares += i + ', '
+            if not self.__should_be_removed(i):
+                new_cache[i] = self.__cache[i]
+                shares += i + ', '
+
+        self.__cache = new_cache
 
         # got response in json format
         logging.debug('cache: request for shares[{0}]'.format(shares))
         shares = response_to_values(get_shares(shares.rstrip(', ')))
+
+        self.__last_update = round(time())
 
         # update cache
         for share, value in shares.items():
@@ -132,3 +147,8 @@ class MarketProxy():
             pr = 0
 
         return [round(time()), {'price': pr, 'summary': recommendation}]
+
+    def __should_be_removed(self, code):
+        last_update = self.__cache[code][0]
+        current_time = round(time())
+        return current_time - last_update > Config.cache_time_to_remove()
