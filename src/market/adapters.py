@@ -5,7 +5,8 @@ import logging
 
 
 def response_to_values(bdata):
-    """Converts received json object to dictionary with shares and its values
+    """
+    Converts received json object to dictionary with shares and its values
 
     :param bdata: received from market answer
     :return: dictionary contains (share_code, share_value, recommendation)

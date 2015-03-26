@@ -12,6 +12,7 @@ def get_shares(shares):
    :return: received json (dictionary), if data retrieving failed - empty dict will be returned
     """
     try:
+        logging.debug('connector: init connection')
         conn = HTTPConnection(Config.url())
         conn.request('GET', Config.request(shares, 5), headers=Config.header())
 
