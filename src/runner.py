@@ -12,7 +12,7 @@ def run():
     logging.basicConfig(format='%(asctime)-15s %(message)s')
     logging.getLogger().setLevel(logging.DEBUG)
     logging.StreamHandler(sys.stdout)
-    logging.debug(sys.path)
+
     logging.info('start execution')
 
     t = Trader()
