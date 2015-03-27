@@ -29,6 +29,12 @@ class Config():
 
     __HOST_FLAG = '-storage_host:'
 
+    """
+    Values for logging
+    """
+    LOG_LEVEL = logging.NOTSET
+    __LOG_FLAG = '-log:'
+
     @staticmethod
     def init(*args):
         """
@@ -45,6 +51,9 @@ class Config():
             if arg.startswith(Config.__HOST_FLAG):
                 Config.STORAGE_HOST = arg.lstrip(Config.__HOST_FLAG)
                 logging.info('\t\tstorage host: {0}'.format(Config.STORAGE_HOST))
+            elif arg.startswith(Config.__LOG_FLAG):
+                Config.LOG_LEVEL = int(arg.lstrip(Config.__LOG_FLAG))
+                logging.info('\t\tstorage host: {0}'.format(Config.LOG_LEVEL))
             else:
                 logging.info('\t\t!!! unrecognized parameter!!!')
 

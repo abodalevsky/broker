@@ -9,6 +9,15 @@ from trading.trader import Trader
 BANNER = """ Starts trading with interval 5 minutes
     options:
         -storage_host:ip_address - ip address of MySQL server, port is default
+        -output_level:LEVEL - level of output can be:
+            CRITICAL = 50
+            FATAL = CRITICAL
+            ERROR = 40
+            WARNING = 30
+            WARN = WARNING
+            INFO = 20
+            DEBUG = 10
+            NOTSET = 0
 """
 
 
@@ -22,6 +31,7 @@ def run():
 
     logging.info('Init...')
     Config.init(*sys.argv)
+    logging.getLogger().setLevel(Config.LOG_LEVEL)
 
     t = Trader()
 
