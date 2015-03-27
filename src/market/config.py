@@ -53,7 +53,7 @@ class Config():
                 logging.info('\t\tstorage host: {0}'.format(Config.STORAGE_HOST))
             elif arg.startswith(Config.__LOG_FLAG):
                 Config.LOG_LEVEL = int(arg.lstrip(Config.__LOG_FLAG))
-                logging.info('\t\tstorage host: {0}'.format(Config.LOG_LEVEL))
+                logging.info('\t\tlogging level: {0}'.format(Config.LOG_LEVEL))
             else:
                 logging.info('\t\t!!! unrecognized parameter!!!')
 
