@@ -11,7 +11,7 @@ ENV STORAGE_HOST -storage_host:0.0.0.0
 #   INFO = 20
 #   DEBUG = 10
 #   NOTSET = 0
-ENV LOG_LEVEL 0
+ENV LOG_LEVEL -log:0
 
 RUN rm -rf db/ admin_site/ trading/tests/ market/tests/
 
