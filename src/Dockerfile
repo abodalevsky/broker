@@ -4,4 +4,6 @@ MAINTAINER abodalevsky@hotmail.com
 #address of MySQL
 ENV STORAGE_HOST -storage_host:0.0.0.0
 
+RUN rm -rf db/ admin_site/
+
 CMD python ./runner.py ${STORAGE_HOST}
