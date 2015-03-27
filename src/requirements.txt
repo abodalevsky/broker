@@ -1,0 +1,5 @@
+#this file is used by pip to install addition packeges
+
+bottl==0.12.8
+--allow-external mysql-connector-python
+mysql-connector-python==2.0.2
