@@ -1,9 +1,9 @@
 __author__ = 'abodalevsky'
 
-import sys
 import logging
 import time
 import urllib.parse
+import configparser
 
 
 """Share name and its code
@@ -44,6 +44,25 @@ class Config():
         :param args: list of arguments
         :return: None
         """
+        print('Init')
+        Config.__init_from_ini()
+        Config.__init_from_cmd(*args)
+
+    @staticmethod
+    def __init_from_ini():
+        logging.info('Fetch data from ini file')
+
+        ini_file = configparser.ConfigParser()
+        ini_file.read('broker.ini')
+
+        try:
+            Config.STORAGE_HOST = ini_file.get('storage', 'STORAGE_HOST')
+            Config.LOG_LEVEL = int(ini_file.get('log', 'LOG_LEVEL'))
+        except configparser.Error as ex:
+            logging.warning('Can\'t read INI: {0}'.format(ex.message))
+
+    @staticmethod
+    def __init_from_cmd(*args):
         logging.info('Fetch data from command line')
 
         for arg in args[1:]:
@@ -56,6 +75,7 @@ class Config():
                 logging.info('\t\tlogging level: {0}'.format(Config.LOG_LEVEL))
             else:
                 logging.info('\t\t!!! unrecognized parameter!!!')
+
 
     @staticmethod
     def url():

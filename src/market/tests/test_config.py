@@ -14,17 +14,18 @@ class TestConfig(TestCase):
         ]
 
         Config.init(*param)
-        self.assertEqual(Config.STORAGE_HOST, '127.0.0.1')
+        # in addition it verifies that setting fromm command line overwrites INI setting
+        self.assertEqual('127.0.0.1', Config.STORAGE_HOST)
 
     def test_init_cmd_log(self):
         param = [
             '/path/to/file',
-            '-log:0',
-            '-bim-bom'
+            '-bim-bom',
+            '-log:0'
         ]
 
         Config.init(*param)
-        self.assertEqual(Config.LOG_LEVEL, logging.NOTSET)
+        self.assertEqual(logging.NOTSET, Config.LOG_LEVEL)
 
         param = [
             '/path/to/file',
@@ -32,7 +33,7 @@ class TestConfig(TestCase):
         ]
 
         Config.init(*param)
-        self.assertEqual(Config.LOG_LEVEL, logging.CRITICAL)
+        self.assertEqual(logging.CRITICAL, Config.LOG_LEVEL)
 
         param = [
             '/path/to/file',
@@ -41,5 +42,22 @@ class TestConfig(TestCase):
         ]
 
         Config.init(*param)
-        self.assertEqual(Config.LOG_LEVEL, 10)
-        self.assertEqual(Config.STORAGE_HOST, '127.0.0.1')
+        self.assertEqual(10, Config.LOG_LEVEL)
+        self.assertEqual('127.0.0.1', Config.STORAGE_HOST)
+
+    def test_init_ini_storage(self):
+        param = ['/path/to/file']
+        Config.init(param)
+
+        self.assertEqual('10.20.30.40', Config.STORAGE_HOST)
+
+    def test_ini_ini_log(self):
+        param = ['/path/to/file']
+        Config.init(param)
+
+        self.assertEqual(30, Config.LOG_LEVEL)
+
+    def test_ini_no_cmd_passed(self):
+        Config.init()
+        self.assertEqual(30, Config.LOG_LEVEL)
+        self.assertEqual('10.20.30.40', Config.STORAGE_HOST)
