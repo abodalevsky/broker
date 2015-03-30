@@ -2,6 +2,7 @@ __author__ = 'abodalevsky'
 
 import bottle
 from trading.store import Store
+from market.config import Config
 from admin_site.models.client_info import ClientInfo
 
 
@@ -49,4 +50,9 @@ def get_ajax_client():
     return ClientInfo().get_full_info(t)
 
 
-bottle.run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)
+def run():
+    Config.init()
+    bottle.run(app, host='0.0.0.0', port=8080, debug=True, reloader=True)
+
+if __name__ == "__main__":
+    run()
